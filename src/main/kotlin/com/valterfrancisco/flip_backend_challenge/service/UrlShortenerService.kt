@@ -13,6 +13,7 @@ class FlipShortenerService(private val urlRepository: UrlRepository) {
 
     fun shortenUrl(longUrl: String): String {
         val existingUrl = urlRepository.findByLongUrl(longUrl)
+        // Check and resolve collisions
         if (existingUrl.isPresent) {
             return "$baseUrl${existingUrl.get().shortUrlId}"
         }
@@ -28,7 +29,7 @@ class FlipShortenerService(private val urlRepository: UrlRepository) {
         return urlRepository.findByShortUrlId(shortUrlId)
     }
 
-    private fun generateShortUrlId(longUrl: String): String {
+    fun generateShortUrlId(longUrl: String): String {
         // Generate a short URL ID and check for collisions
         var shortUrlId: String
         do {
