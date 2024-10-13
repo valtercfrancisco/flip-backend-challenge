@@ -105,4 +105,28 @@ class FlipShortenerControllerTest {
         mockMvc.perform(get("/api/v1/shortener/{shortUrlId}", shortUrlId))
             .andExpect(status().isInternalServerError)
     }
+
+    @Test
+    fun `deleteUrl should return 204 when URL is deleted successfully`() {
+        // Given
+        val shortUrlId = "abc123"
+
+        every { flipShortenerService.deleteUrl(shortUrlId) } returns true
+
+        // When & Then
+        mockMvc.perform(delete("/api/v1/shortener/{shortUrlId}", shortUrlId))
+            .andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `deleteUrl should return 404 when URL does not exist`() {
+        // Given
+        val shortUrlId = "nonexistent"
+
+        every { flipShortenerService.deleteUrl(shortUrlId) } returns false
+
+        // When & Then
+        mockMvc.perform(delete("/api/v1/shortener/{shortUrlId}", shortUrlId))
+            .andExpect(status().isNotFound)
+    }
 }

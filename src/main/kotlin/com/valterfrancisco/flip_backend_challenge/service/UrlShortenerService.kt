@@ -3,6 +3,7 @@ package com.valterfrancisco.flip_backend_challenge.service
 import com.valterfrancisco.flip_backend_challenge.model.Url
 import com.valterfrancisco.flip_backend_challenge.repository.UrlRepository
 import com.valterfrancisco.flip_backend_challenge.util.hash
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -23,6 +24,17 @@ class FlipShortenerService(private val urlRepository: UrlRepository) {
         urlRepository.save(url)
 
         return "$baseUrl$shortUrlId"
+    }
+
+    @Transactional
+    fun deleteUrl(shortUrlId: String): Boolean {
+        if (urlRepository.existsByShortUrlId(shortUrlId)) {
+            val deletedCount = urlRepository.deleteByShortUrlId(shortUrlId)
+            return deletedCount > 0
+        } else {
+            println("URL with shortUrlId: $shortUrlId does not exist.")
+            return false
+        }
     }
 
     fun getOriginalUrl(shortUrlId: String): Optional<Url> {

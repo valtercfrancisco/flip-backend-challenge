@@ -87,4 +87,37 @@ class FlipShortenerServiceTest {
         assertTrue(result.isEmpty)
         verify(exactly = 1) { urlRepository.findByShortUrlId(shortUrlId) }
     }
+
+    @Test
+    fun `deleteUrl should return true when URL is deleted successfully`() {
+        // Given
+        val shortUrlId = "abc123"
+
+        every { urlRepository.deleteByShortUrlId(shortUrlId) } returns 1
+        every { urlRepository.existsByShortUrlId(shortUrlId) } returns true
+
+        // When
+        val result = flipShortenerService.deleteUrl(shortUrlId)
+
+        // Then
+        assertTrue(result)
+        verify(exactly = 1) { urlRepository.existsByShortUrlId(shortUrlId) }
+        verify(exactly = 1) { urlRepository.deleteByShortUrlId(shortUrlId) }
+    }
+
+    @Test
+    fun `deleteUrl should return false when URL does not exist`() {
+        // Given
+        val shortUrlId = "nonexistent"
+
+        every { urlRepository.existsByShortUrlId(shortUrlId) } returns false
+
+        // When
+        val result = flipShortenerService.deleteUrl(shortUrlId)
+
+        // Then
+        assertFalse(result)
+        verify(exactly = 1) { urlRepository.existsByShortUrlId(shortUrlId) }
+        verify(exactly = 0) { urlRepository.deleteByShortUrlId(any()) }
+    }
 }
