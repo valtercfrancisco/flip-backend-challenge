@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
 
 @ExtendWith(SpringExtension::class)
-@WebMvcTest(FlipShortenerController::class) // Specify the controller class to test
+@WebMvcTest(FlipShortenerController::class)
 class FlipShortenerControllerTest {
 
     @Autowired
@@ -57,6 +57,33 @@ class FlipShortenerControllerTest {
     }
 
     @Test
+    fun `shortenUrl should return bad request when invalid URL is provided`() {
+        // Given
+        val invalidUrl = "invalid_url"
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/shortener/shorten")
+            .param("longUrl", invalidUrl)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().isBadRequest)
+            .andExpect(content().string("Invalid URL format."))
+    }
+
+    @Test
+    fun `shortenUrl should return internal server error when service throws exception`() {
+        // Given
+        val longUrl = "https://example.com"
+        every { flipShortenerService.shortenUrl(longUrl) } throws RuntimeException("Service error")
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/shortener/shorten")
+            .param("longUrl", longUrl)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().isInternalServerError)
+            .andExpect(content().string("An error occurred while processing the request."))
+    }
+
+    @Test
     fun `getOriginalUrl should return 404 when short URL does not exist`() {
         // Given
         val shortUrlId = "nonexistent"
@@ -66,5 +93,16 @@ class FlipShortenerControllerTest {
         // When & Then
         mockMvc.perform(get("/api/v1/shortener/{shortUrlId}", shortUrlId))
             .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `getOriginalUrl should return internal server error when service throws exception`() {
+        // Given
+        val shortUrlId = "abc123"
+        every { flipShortenerService.getOriginalUrl(shortUrlId) } throws RuntimeException("Service error")
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/shortener/{shortUrlId}", shortUrlId))
+            .andExpect(status().isInternalServerError)
     }
 }
