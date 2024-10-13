@@ -9,7 +9,7 @@ import kotlin.test.Test
 class EncodeUtilsKtTest {
 
     @Test
-    fun `hash should return MD5 hash of string with default truncation`() {
+    fun `hash should return SHA-256 hash of string with default truncation`() {
         // Given
         val inputString = "https://hash.com"
 
@@ -17,11 +17,11 @@ class EncodeUtilsKtTest {
         val result = inputString.hash()
 
         // Then
-        assertEquals("ad1d12", result)
+        assertEquals("8faec9", result)
     }
 
     @Test
-    fun `hash should return MD5 hash of string with custom truncation length`() {
+    fun `hash should return SHA-256 hash of string with custom truncation length`() {
         // Given
         val inputString = "https://hash.com"
         val truncateLength = 8
@@ -30,7 +30,7 @@ class EncodeUtilsKtTest {
         val result = inputString.hash(truncate = truncateLength)
 
         // Then
-        assertEquals("ad1d12de", result)
+        assertEquals("8faec9e7", result)
     }
 
     @Test
@@ -42,7 +42,7 @@ class EncodeUtilsKtTest {
         val result = inputString.hash()
 
         // Then
-        assertEquals("d41d8c", result)
+        assertEquals("e3b0c4", result)
     }
 
     @Test
@@ -54,6 +54,6 @@ class EncodeUtilsKtTest {
         val result = inputString.hash()
 
         // Then
-        assertEquals("900150", result)
+        assertEquals("ba7816", result)
     }
 }
