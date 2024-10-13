@@ -57,14 +57,20 @@ The URL shortener exposes the following API endpoints:
 - POST /api/urls: Shortens a given long URL.
 
 Example using:
-```
+```sql
 curl -X POST "http://localhost:8080/api/v1/shortener/shorten?longUrl=https://github.com"
 ```
 
 - GET /{shortUrlId}: Redirects to the original long URL.
 
+```sql
+curl -X GET "http://localhost:8080/api/v1/shortener/996e1f"  
 ```
-curl -X GET "http://localhost:8080/api/v1/shortener/3097fc"  
+
+- DELETE /{shortUrlId}: Deletes an existing shortUrl
+
+```sql
+curl -X DELETE "http://localhost:8080/api/v1/shortener/996e1f"
 ```
 
 ## Architecture and Design
